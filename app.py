@@ -24,7 +24,7 @@ r = requests.get(url)
 if r.status_code == 200:
     data = r.json()
     # print(data)
-    for indexVal in data['data']:
+    for indexVal in data['data'][:30]:
         records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
                             "price": str(round(float(indexVal['priceUsd']), 2)),
                             "volume": str(round(float(indexVal['volumeUsd24Hr']), 2))})
