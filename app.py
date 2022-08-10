@@ -18,8 +18,9 @@ PASSWORD = os.getenv("psswd")
 helper_module = SourceFileLoader('*', './helpers.py').load_module()
 
 app = Flask(__name__)
+#change this to old string
 client = pymongo.MongoClient(
-    f"mongodb+srv://{USER}:{PASSWORD}@cluster0.hi7h93b.mongodb.net/?retryWrites=true&w=majority")
+    f"mongodb://{USER}:{PASSWORD}@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = client.get_database('Cluster0')
 records = db.Crypto
 # Steps to get data for Graphs and Presentation
@@ -120,7 +121,7 @@ def update_db():
 
 def run_web_server():
     print("RUNNING WEB SERVER")
-    app.debug = True
+    app.debug = False
     app.run()
 
 
