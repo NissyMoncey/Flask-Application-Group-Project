@@ -10,30 +10,18 @@ import ast
 from importlib.machinery import SourceFileLoader
 from dotenv import load_dotenv
 import os
-
+import threading
+import time
 load_dotenv()
 USER = os.getenv("USER")
 PASSWORD = os.getenv("psswd")
 helper_module = SourceFileLoader('*', './helpers.py').load_module()
 
 app = Flask(__name__)
-
-# MONGO DB Connection
 client = pymongo.MongoClient(
-    f"mongodb://{USER}:{PASSWORD}@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
+    f"mongodb+srv://{USER}:{PASSWORD}@cluster0.hi7h93b.mongodb.net/?retryWrites=true&w=majority")
 db = client.get_database('Cluster0')
 records = db.Crypto
-url = " https://api.coincap.io/v2/assets"
-# Get Data from mentioned url and store into the Mongo DB
-r = requests.get(url)
-if r.status_code == 200:
-    data = r.json()
-    # print(data)
-    for indexVal in data['data'][:20]:
-        records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
-                            "price": indexVal['priceUsd'],
-                            "volume": indexVal['volumeUsd24Hr']})
-
 # Steps to get data for Graphs and Presentation
 ranks = []
 names = []
@@ -44,8 +32,6 @@ for record in cursor[:20]:
     names.append(record["name"])
     ranks.append(record["rank"])
     prices.append(record["price"])
-
-
 
 
 @app.route("/")
@@ -94,7 +80,8 @@ def fetch_users():
         query_params = helper_module.parse_query_params(request.query_string)
         # Check if dictionary is not empty
         if query_params:
-            query = {k: v if isinstance(v, str) and v.isdigit() else v for k, v in query_params.items()}
+            query = {k: v if isinstance(v, str) and v.isdigit(
+            ) else v for k, v in query_params.items()}
             # Fetch all the record(s)
             records_fetched = records.find(query)
             # Check if the records are found
@@ -114,6 +101,31 @@ def fetch_users():
         return "", 500
 
 
-if __name__ == "__main__":
+def update_db():
+    print('CONNECTED TO DB')
+
+    url = " https://api.coincap.io/v2/assets"
+    # Get Data from mentioned url and store into the Mongo DB
+    while(1):
+        r = requests.get(url)
+        if r.status_code == 200:
+            data = r.json()
+            # print(data)
+            for indexVal in data['data'][:5]:
+                records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
+                                    "price": indexVal['priceUsd'],
+                                    "volume": indexVal['volumeUsd24Hr']})
+        time.sleep(3600*24)
+
+
+def run_web_server():
+    print("RUNNING WEB SERVER")
     app.debug = True
     app.run()
+
+
+if __name__ == "__main__":
+    t1 = threading.Thread(target=update_db)
+    t2 = threading.Thread(target=run_web_server)
+    t2.start()
+    t1.start()
