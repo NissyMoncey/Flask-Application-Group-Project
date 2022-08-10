@@ -1,5 +1,4 @@
 import pymongo
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 import requests
@@ -42,14 +41,6 @@ for record in cursor[:20]:
     prices.append(record["price"])
 
 
-def schedule_Task():
-    scheduler.start()
-    print("Scheduler is alive!")
-    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
-
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(id='Scheduled Task', func=schedule_Task, trigger="interval", seconds=10)
 
 
 @app.route("/")
