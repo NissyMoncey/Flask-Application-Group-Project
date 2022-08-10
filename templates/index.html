@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<head>
+    <style>
+        body {
+                background-image: url('/static/one.jpg');
+                overflow: scroll;
+<!--            background-repeat: no-repeat;-->
+                <!--background-size: 100% 100%;-->
+
+        }
+    </style>
+
+    <div class="container-fluid">
+        <p></p>
+        <h1 style="text-align:center; color: #f8f9fa; font-style: oblique font-family: 'Geneva', Times, serif, serif; ">BDAT 1004 Final Project</h1>
+    </div>
+
+    <style>
+        .style-t {
+            border-collapse: collapse;
+            margin: 20px 34%;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 430px;
+            box-shadow: 0 0 15px rgb(8,80,122);
+        }
+
+            .style-t thead tr {
+                background-color: #408AB5;
+                color: #ffffff;
+                text-align: left;
+            }
+
+            .style-t th,
+            .style-t td {
+                padding: 12px 50px;
+            }
+
+            .style-t tbody tr {
+                border-bottom: 0.9px solid #dddddd;
+                background-color:white;
+            }
+
+                .style-t tbody tr:last-of-type {
+                    border-bottom: 2px solid #408AB5;
+                }
+    </style>
+</head>
+<body>
+        <p></p>
+        <h1 style="text-align:center; color: #f8f9fa; font-style: oblique font-family: 'Geneva', Times, serif, serif;  ">THIS PAGE SHALL DISPLAY THE INFORMATION REGARDING DIFFERENT CRYPTOCURRENCIES AND UPDATE THE RECORDS EVERY 24 HOURS
+
+
+.</h1>
+        <h1 style="text-align:center; color: #f8f9fa; font-style: oblique font-family: 'Geneva', Times, serif, serif;"> WE CAN VIEW THE DIFFERENT COMPARISONS BASED ON RANKING AND PRICES IN BAR GRAPHS AND ALSO SEE A SUMMARY TABLE.</h1>
+
+</body>
+
+
+{% endblock %}

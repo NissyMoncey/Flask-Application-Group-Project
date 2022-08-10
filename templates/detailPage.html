@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Bar Chart{% endblock %}
+{% block content %}
+
+<html>
+    <head>
+       <link rel="stylesheet" type="text/css"  href="{{ url_for('static',filename='assets/style.css')}}" >
+    </head>
+<body>
+     <h1 style="text-align:center; color: #594678; font-style: oblique font-family: 'Geneva', Times, serif, serif; ">CryptoCurrency Assets List</h1>
+    <table>
+        <thead class="table-head">
+        <tr>
+            <th class="status">Currency</th>
+            <th class="status">Symbol</th>
+            <th class="status">Ranking</th>
+            <th class="status">Price (USD) </th>
+            <th class="status">volumeUsd24Hr</th>
+        </tr>
+        </thead>
+        {% for detail in details %}
+        <tr class="tr-status">
+            <td class="status">{{ detail.name }}</td>
+            <td class="status">{{ detail.symbol }}</td>
+            <td class="status">{{ detail.rank }}</td>
+            <td class="status">{{ detail.price }}</td>
+            <td class="status">{{ detail.volume }}</td>
+        </tr>
+        {% endfor %}
+
+   </table>
+
+</body>
+</html>
+
+{% endblock %}

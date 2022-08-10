@@ -1,0 +1,123 @@
+import pymongo
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, jsonify, request, render_template
+from pymongo import MongoClient
+import requests
+import time
+from bson.json_util import dumps
+from flask import request, jsonify
+import json
+import ast
+from importlib.machinery import SourceFileLoader
+
+helper_module = SourceFileLoader('*', './helpers.py').load_module()
+
+app = Flask(__name__)
+
+# MONGO DB Connection
+client = pymongo.MongoClient(
+    "mongodb://NissySujith:Sujith123@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
+db = client.get_database('Cluster0')
+records = db.Crypto
+url = " https://api.coincap.io/v2/assets"
+# Get Data from mentioned url and store into the Mongo DB
+r = requests.get(url)
+if r.status_code == 200:
+    data = r.json()
+    # print(data)
+    for indexVal in data['data']:
+        records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
+                            "price": str(round(float(indexVal['priceUsd']), 2)),
+                            "volume": str(round(float(indexVal['volumeUsd24Hr']), 2))})
+
+# Steps to get data for Graphs and Presentation
+ranks = []
+names = []
+prices = []
+
+cursor = records.find()
+for record in cursor[:20]:
+    names.append(record["name"])
+    ranks.append(record["rank"])
+    prices.append(record["price"])
+
+
+def schedule_Task():
+    scheduler.start()
+    print("Scheduler is alive!")
+    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(id='Scheduled Task', func=schedule_Task, trigger="interval", seconds=10)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@app.route("/BarChartRanks")
+def BarChart():
+    labels = names
+    values = ranks
+    return render_template('BarChart.html', labels=labels, values=values)
+
+
+@app.route("/BarChartPrices")
+def BarChartPrices():
+    labels = names
+    values = prices
+    return render_template('BarChartPrices.html', labels=labels, values=values)
+
+
+@app.route("/detail")
+def getDetail():
+    details = []
+    detailsVal = records.find()
+    for detail in detailsVal[:20]:
+        details.append(
+            {'name': detail['name'], 'price': str(round(float(detail['price']), 2)), 'symbol': detail['symbol'],
+             'rank': detail['rank'], 'volume': str(round(float(detail['volume']), 2))})
+        print(details)
+        # details = {'name': index['name'], 'price': index['priceUsd'], 'symbol': index['symbol'],
+        # 'rank': index['rank'], 'volume': index['volumeUsd24Hr']}
+    return render_template('detailPage.html', details=details)
+
+
+# API to get all Cryptocurrency assets
+@app.route("/api/v1/getAllAssets", methods=['GET'])
+def fetch_users():
+    try:
+        # Call the function to get the query params
+        query_params = helper_module.parse_query_params(request.query_string)
+        # Check if dictionary is not empty
+        if query_params:
+            query = {k: v if isinstance(v, str) and v.isdigit() else v for k, v in query_params.items()}
+            # Fetch all the record(s)
+            records_fetched = records.find(query)
+            # Check if the records are found
+            if records_fetched.count() > 0:
+                # Prepare the response
+                return dumps(records_fetched)
+            else:
+                # No records are found
+                return "", 404
+        else:
+            # Return all the records as query string parameters are not available
+            if records.find().count() > 0:
+                return dumps(records.find())
+            else:
+                return jsonify([])
+    except:
+        return "", 500
+
+
+if __name__ == "__main__":
+    app.debug = False
+    app.run()

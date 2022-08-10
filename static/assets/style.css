@@ -1,0 +1,44 @@
+h1{
+/*  font-family:"Arial Black", Gadget, sans-serif;*/
+    font-family:"Times New Romans", Gadget, sans-serif;
+}
+body{
+   color:black;
+    background-color:white;
+    left-margin:10px;
+    right-margin:10px;
+    overflow: scroll;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #111;
+}
+
+table {
+  border-collapse: collapse;
+   width: 100%;
+}
+
+th,td {
+  border:  1px solid black;
+  text-align: center;
+  padding:  8px;
+}
+
+tr:nth-child(odd){
+  background-color: #8c8c96;
+
+}
+
+th.status {
+  font-size: 18px;
+  font-family: sans-serif;
+  text-transform: capitalize;
+}
+
+td.status {
+  font-size: 14px;
+  font-family: 'Geneva', Times, serif, serif;
+  color: #2a2a50;
+}
