@@ -8,14 +8,18 @@ from flask import request, jsonify
 import json
 import ast
 from importlib.machinery import SourceFileLoader
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
+USER = os.getenv("USER")
+PASSWORD = os.getenv("psswd")
 helper_module = SourceFileLoader('*', './helpers.py').load_module()
 
 app = Flask(__name__)
 
 # MONGO DB Connection
 client = pymongo.MongoClient(
-    "mongodb://NissySujith:Sujith123@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
+    f"mongodb+srv://{USER}:{PASSWORD}@cluster0.hi7h93b.mongodb.net/?retryWrites=true&w=majority")
 db = client.get_database('Cluster0')
 records = db.Crypto
 url = " https://api.coincap.io/v2/assets"
@@ -39,8 +43,6 @@ for record in cursor[:20]:
     names.append(record["name"])
     ranks.append(record["rank"])
     prices.append(record["price"])
-
-
 
 
 @app.route("/")
@@ -89,7 +91,8 @@ def fetch_users():
         query_params = helper_module.parse_query_params(request.query_string)
         # Check if dictionary is not empty
         if query_params:
-            query = {k: v if isinstance(v, str) and v.isdigit() else v for k, v in query_params.items()}
+            query = {k: v if isinstance(v, str) and v.isdigit(
+            ) else v for k, v in query_params.items()}
             # Fetch all the record(s)
             records_fetched = records.find(query)
             # Check if the records are found
