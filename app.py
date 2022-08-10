@@ -77,29 +77,31 @@ def getDetail():
 @app.route("/api/v1/getAllAssets", methods=['GET'])
 def fetch_users():
     try:
-        # Call the function to get the query params
-        query_params = helper_module.parse_query_params(request.query_string)
-        # Check if dictionary is not empty
-        if query_params:
-            query = {k: v if isinstance(v, str) and v.isdigit(
-            ) else v for k, v in query_params.items()}
-            # Fetch all the record(s)
-            records_fetched = records.find(query)
-            # Check if the records are found
-            if records_fetched.count() > 0:
-                # Prepare the response
-                return dumps(records_fetched)
-            else:
-                # No records are found
-                return "", 404
-        else:
-            # Return all the records as query string parameters are not available
-            if records.find().count() > 0:
-                return dumps(records.find())
-            else:
-                return jsonify([])
+        return jsonify(records.find())
     except:
         return "", 500
+        # Call the function to get the query params
+        # query_params = helper_module.parse_query_params(request.query_string)
+        # # Check if dictionary is not empty
+        # if query_params:
+        #     query = {k: v if isinstance(v, str) and v.isdigit(
+        #     ) else v for k, v in query_params.items()}
+        #     # Fetch all the record(s)
+        #     records_fetched = records.find(query)
+        #     # Check if the records are found
+        #     if records_fetched.count() > 0:
+        #         # Prepare the response
+        #         return dumps(records_fetched)
+        #     else:
+        #         # No records are found
+        #         return "", 404
+        # else:
+        #     # Return all the records as query string parameters are not available
+        #     if records.find().count() > 0:
+        #         return dumps(records.find())
+        #     else:
+        #         return jsonify([])
+
 
 
 def update_db():
