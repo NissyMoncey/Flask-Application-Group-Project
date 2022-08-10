@@ -26,8 +26,8 @@ if r.status_code == 200:
     # print(data)
     for indexVal in data['data'][:30]:
         records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
-                            "price": str(round(float(indexVal['priceUsd']), 2)),
-                            "volume": str(round(float(indexVal['volumeUsd24Hr']), 2))})
+                            "price": indexVal['priceUsd'],
+                            "volume": indexVal['volumeUsd24Hr']})
 
 # Steps to get data for Graphs and Presentation
 ranks = []
@@ -75,7 +75,7 @@ def getDetail():
         details.append(
             {'name': detail['name'], 'price': str(round(float(detail['price']), 2)), 'symbol': detail['symbol'],
              'rank': detail['rank'], 'volume': str(round(float(detail['volume']), 2))})
-        print(details)
+        # (details)
         # details = {'name': index['name'], 'price': index['priceUsd'], 'symbol': index['symbol'],
         # 'rank': index['rank'], 'volume': index['volumeUsd24Hr']}
     return render_template('detailPage.html', details=details)
