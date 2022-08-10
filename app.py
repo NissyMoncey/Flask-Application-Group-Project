@@ -8,14 +8,19 @@ from flask import request, jsonify
 import json
 import ast
 from importlib.machinery import SourceFileLoader
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+USER = os.getenv("USER")
+PASSWORD = os.getenv("psswd")
 helper_module = SourceFileLoader('*', './helpers.py').load_module()
 
 app = Flask(__name__)
 
 # MONGO DB Connection
 client = pymongo.MongoClient(
-    "mongodb://NissySujith:Sujith123@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
+    f"mongodb://{USER}:{PASSWORD}@ac-s9wxd5z-shard-00-00.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-01.mhhdqxv.mongodb.net:27017,ac-s9wxd5z-shard-00-02.mhhdqxv.mongodb.net:27017/?ssl=true&replicaSet=atlas-gf2b72-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = client.get_database('Cluster0')
 records = db.Crypto
 url = " https://api.coincap.io/v2/assets"
@@ -24,7 +29,7 @@ r = requests.get(url)
 if r.status_code == 200:
     data = r.json()
     # print(data)
-    for indexVal in data['data'][:5]:
+    for indexVal in data['data'][:20]:
         records.insert_one({"name": indexVal['name'], "symbol": indexVal['symbol'], "rank": indexVal['rank'],
                             "price": indexVal['priceUsd'],
                             "volume": indexVal['volumeUsd24Hr']})
