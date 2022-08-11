@@ -76,10 +76,11 @@ def getDetail():
 # API to get all Cryptocurrency assets
 @app.route("/api/v1/getAllAssets", methods=['GET'])
 def fetch_users():
-    try:
-        return jsonify(records.find())
-    except:
-        return "", 500
+    # print(f'LEN OF RECORDS IS {len(records.find())}')
+    temp = [i for i in records.find({}, {"_id": 0})]
+    print(temp)
+    return json.dumps({"data": temp})
+
         # Call the function to get the query params
         # query_params = helper_module.parse_query_params(request.query_string)
         # # Check if dictionary is not empty
